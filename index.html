@@ -20,7 +20,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;heigh
 /* ── Header ── */
 header{background:linear-gradient(135deg,var(--purple) 0%,#3D0D6B 100%);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 20px rgba(92,26,138,.4)}
 .header-brand{display:flex;align-items:center;gap:10px}
+.header-right{display:flex;align-items:center;gap:12px}
 #last-update{font-size:11px;color:rgba(255,255,255,.45);background:rgba(0,0,0,.2);padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.1)}
+.btn-live{background:rgba(255,59,92,.2);border:1px solid rgba(255,59,92,.4);color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Inter';text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:background .2s}
+.btn-live:hover{background:rgba(255,59,92,.35)}
 
 /* ── Layout ── */
 .layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 56px)}
@@ -30,7 +33,7 @@ header{background:linear-gradient(135deg,var(--purple) 0%,#3D0D6B 100%);border-b
 .sidebar-top{padding:12px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px;background:var(--purple-bg)}
 .sidebar-list{overflow-y:auto;flex:1;padding:10px}
 
-/* ── Collapsible panels ── */
+/* ── Collapsible ── */
 .collapsible{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
 .collapsible summary{cursor:pointer;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;list-style:none;display:flex;align-items:center;gap:6px}
 .collapsible[open] summary{color:var(--purple-lt);margin-bottom:10px}
@@ -51,6 +54,27 @@ header{background:linear-gradient(135deg,var(--purple) 0%,#3D0D6B 100%);border-b
 .comp-item:hover{background:var(--surface)}
 .comp-item input[type=checkbox]{accent-color:var(--purple-lt);cursor:pointer;width:14px;height:14px;flex-shrink:0}
 .comp-item.others{color:var(--muted);font-style:italic;border-top:1px solid var(--border);margin-top:6px;padding-top:8px}
+
+/* ── Toggle switch ── */
+.tog{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;cursor:pointer;inset:0;background:var(--surface2);border:1px solid var(--border);border-radius:20px;transition:.3s}
+.tog-sl::before{position:absolute;content:'';height:14px;width:14px;left:3px;bottom:2px;background:var(--muted);border-radius:50%;transition:.3s}
+input:checked+.tog-sl{background:var(--purple);border-color:var(--purple-lt)}
+input:checked+.tog-sl::before{transform:translateX(15px);background:#fff}
+
+/* ── Auto-refresh panel ── */
+.refresh-panel{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.refresh-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.refresh-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.refresh-countdown{font-size:12px;color:var(--purple-lt);font-weight:700;min-width:36px;text-align:right}
+.refresh-sub{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.refresh-sub select{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-size:11px;font-family:'Inter';outline:none;flex:1}
+.refresh-sub select:focus{border-color:var(--purple-lt)}
+.sync-row{display:flex;align-items:center;gap:7px}
+.sync-row label{font-size:11px;color:var(--muted);cursor:pointer}
+.sync-row input[type=checkbox]{accent-color:var(--purple-lt);cursor:pointer}
+.refresh-warn{font-size:10px;color:var(--muted);margin-top:5px}
 
 /* ── Buttons ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Inter';font-size:13px;font-weight:600;transition:all .15s;white-space:nowrap}
@@ -151,8 +175,8 @@ header{background:linear-gradient(135deg,var(--purple) 0%,#3D0D6B 100%);border-b
 .stat-val{font-size:13px;font-weight:700;color:var(--text);width:40px;flex-shrink:0}
 .stat-val.right{text-align:right}
 .stat-bar-track{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;display:flex}
-.bar-home{height:100%;background:linear-gradient(90deg,var(--purple-mid),var(--purple-lt));border-radius:3px 0 0 3px;transition:width .5s ease}
-.bar-away{height:100%;background:linear-gradient(90deg,#0099cc,var(--upcoming));border-radius:0 3px 3px 0;transition:width .5s ease}
+.bar-home{height:100%;background:linear-gradient(90deg,var(--purple-mid),var(--purple-lt));transition:width .5s ease}
+.bar-away{height:100%;background:linear-gradient(90deg,#0099cc,var(--upcoming));transition:width .5s ease}
 .stat-legend{display:flex;justify-content:space-between;margin-bottom:16px;font-size:12px;font-weight:600}
 .home-label{color:var(--purple-lt);display:flex;align-items:center;gap:5px}
 .home-label::before{content:'';width:10px;height:3px;background:var(--purple-lt);border-radius:2px}
@@ -211,7 +235,10 @@ header{background:linear-gradient(135deg,var(--purple) 0%,#3D0D6B 100%);border-b
          alt="Na Rede" style="height:34px;object-fit:contain;mix-blend-mode:screen">
     <span style="color:rgba(255,255,255,.4);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-left:4px;align-self:flex-end;padding-bottom:3px">Esportes ao Vivo</span>
   </div>
-  <span id="last-update"></span>
+  <div class="header-right">
+    <span id="last-update"></span>
+    <a href="live.html" target="_blank" class="btn-live">📺 Transmissão</a>
+  </div>
 </header>
 
 <div class="layout">
@@ -238,6 +265,28 @@ header{background:linear-gradient(135deg,var(--purple) 0%,#3D0D6B 100%);border-b
         <summary>🏆 Competições</summary>
         <div id="comp-filter-list"></div>
       </details>
+
+      <!-- Auto-atualizar -->
+      <div class="refresh-panel">
+        <div class="refresh-row">
+          <span class="refresh-label">🔄 Auto-atualizar</span>
+          <span class="refresh-countdown" id="auto-countdown"></span>
+          <label class="tog"><input type="checkbox" id="auto-tog" onchange="toggleAutoRefresh(this.checked)"><span class="tog-sl"></span></label>
+        </div>
+        <div class="refresh-sub">
+          <select id="auto-interval" onchange="changeAutoInterval()">
+            <option value="120">2 minutos</option>
+            <option value="300" selected>5 minutos</option>
+            <option value="600">10 minutos</option>
+            <option value="900">15 minutos</option>
+          </select>
+        </div>
+        <div class="sync-row">
+          <input type="checkbox" id="auto-sync" checked>
+          <label for="auto-sync">Sincronizar planilha automaticamente</label>
+        </div>
+        <div class="refresh-warn">⚠️ ~5 reqs/ciclo · limite: 100/dia</div>
+      </div>
 
       <button class="btn btn-primary" id="btn-buscar" onclick="buscarJogos()">🔍 Buscar Jogos</button>
     </div>
@@ -275,36 +324,44 @@ const AF_BASE = "https://v3.football.api-sports.io";
 const ICONES  = { Goal:"⚽", Card:"🟨", subst:"🔄", Var:"📺" };
 
 const MAIN_COMPS = [
-  { id:71,  nome:"Brasileirão Série A" },
-  { id:72,  nome:"Brasileirão Série B" },
-  { id:73,  nome:"Copa do Brasil" },
-  { id:13,  nome:"Libertadores" },
-  { id:11,  nome:"Sul-Americana" },
-  { id:2,   nome:"Champions League" },
-  { id:3,   nome:"Europa League" },
-  { id:39,  nome:"Premier League" },
-  { id:140, nome:"La Liga" },
-  { id:135, nome:"Serie A (Itália)" },
-  { id:78,  nome:"Bundesliga" },
-  { id:61,  nome:"Ligue 1" },
-  { id:1,   nome:"Copa do Mundo" },
-  { id:31,  nome:"Eliminatórias Sul-Am." },
-  { id:9,   nome:"Copa América" },
-  { id:6,   nome:"Eurocopa" },
+  {id:71,nome:"Brasileirão Série A"},{id:72,nome:"Brasileirão Série B"},
+  {id:73,nome:"Copa do Brasil"},{id:13,nome:"Libertadores"},
+  {id:11,nome:"Sul-Americana"},{id:2,nome:"Champions League"},
+  {id:3,nome:"Europa League"},{id:39,nome:"Premier League"},
+  {id:140,nome:"La Liga"},{id:135,nome:"Serie A (Itália)"},
+  {id:78,nome:"Bundesliga"},{id:61,nome:"Ligue 1"},
+  {id:1,nome:"Copa do Mundo"},{id:31,nome:"Eliminatórias Sul-Am."},
+  {id:9,nome:"Copa América"},{id:6,nome:"Eurocopa"},
 ];
 
 // ── Estado ────────────────────────────────────────────────────────────────
 let cfg   = JSON.parse(localStorage.getItem(LS_CFG)  || "{}");
 let compF = JSON.parse(localStorage.getItem(LS_COMP) || "null");
-if (!compF) {
-  compF = { enabled: MAIN_COMPS.map(c => c.id), showOthers: false };
-  saveComps();
-}
+if (!compF) { compF = { enabled: MAIN_COMPS.map(c=>c.id), showOthers:false }; saveComps(); }
 
 let S = {
-  fixtures: {}, selectedId: null, preview: null,
-  activeTab: "geral", statsData: null, standData: null, sheetLoaded: false,
+  fixtures:{}, selectedId:null, preview:null,
+  activeTab:"geral", statsData:null, standData:null, sheetLoaded:false,
 };
+
+// Auto-refresh
+let autoCountTimer = null;
+let autoCountVal   = 0;
+
+// BroadcastChannel para espelhar no live.html
+const bc = new BroadcastChannel("narede_live");
+bc.onmessage = e => { if (e.data.type === "request_state") broadcastState(); };
+
+function broadcastState() {
+  bc.postMessage({
+    type:      "state_update",
+    fixture:   S.preview?.fixture   || null,
+    eventos:   S.preview?.eventos   || [],
+    escalacao: S.preview?.escalacao || [],
+    statsData: S.statsData          || [],
+    standData: S.standData          || null,
+  });
+}
 
 // ── Init ──────────────────────────────────────────────────────────────────
 document.getElementById("inp-api-key").value    = cfg.apiKey    || "";
@@ -322,136 +379,229 @@ function salvarConfig() {
 }
 function saveComps() { localStorage.setItem(LS_COMP, JSON.stringify(compF)); }
 
-// ── Filtro de competições ─────────────────────────────────────────────────
+// ── Filtro ────────────────────────────────────────────────────────────────
 function renderCompFilter() {
-  let html = '<div class="comp-section-title">Principais</div>';
+  let h = '<div class="comp-section-title">Principais</div>';
   for (const c of MAIN_COMPS) {
     const chk = compF.enabled.includes(c.id) ? "checked" : "";
-    html += `<label class="comp-item"><input type="checkbox" ${chk} onchange="toggleComp(${c.id},this.checked)"> ${c.nome}</label>`;
+    h += `<label class="comp-item"><input type="checkbox" ${chk} onchange="toggleComp(${c.id},this.checked)"> ${c.nome}</label>`;
   }
-  html += `<label class="comp-item others"><input type="checkbox" ${compF.showOthers?"checked":""} onchange="toggleOthers(this.checked)"> Mostrar outras competições</label>`;
-  document.getElementById("comp-filter-list").innerHTML = html;
+  h += `<label class="comp-item others"><input type="checkbox" ${compF.showOthers?"checked":""} onchange="toggleOthers(this.checked)"> Mostrar outras competições</label>`;
+  document.getElementById("comp-filter-list").innerHTML = h;
 }
 function toggleComp(id, on) {
-  compF.enabled = on ? [...compF.enabled, id] : compF.enabled.filter(x => x !== id);
+  compF.enabled = on ? [...compF.enabled,id] : compF.enabled.filter(x=>x!==id);
   saveComps(); renderLista();
 }
 function toggleOthers(on) { compF.showOthers = on; saveComps(); renderLista(); }
 function isVisible(f) {
   const lid = f.league.id;
-  const main = MAIN_COMPS.some(c => c.id === lid);
-  return main ? compF.enabled.includes(lid) : compF.showOthers;
+  return MAIN_COMPS.some(c=>c.id===lid) ? compF.enabled.includes(lid) : compF.showOthers;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────
-const $   = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 const hoje = () => new Date().toISOString().split("T")[0];
 
 function toast(msg, type="success") {
-  const el = $("toast");
-  el.textContent = msg; el.className = `toast show ${type}`;
-  setTimeout(() => el.className = "toast", 3000);
+  const el=$("toast"); el.textContent=msg; el.className=`toast show ${type}`;
+  setTimeout(()=>el.className="toast",3000);
 }
 function setLoading(id, on, label) {
-  const b = $(id); if (!b) return;
-  b.disabled = on; b.innerHTML = on ? `<span class="spinner"></span> ${label}` : label;
+  const b=$(id); if(!b)return; b.disabled=on;
+  b.innerHTML=on?`<span class="spinner"></span> ${label}`:label;
 }
 async function af(endpoint, params={}) {
-  if (!cfg.apiKey) { toast("Configure sua API Key.", "error"); return null; }
-  const url = new URL(`${AF_BASE}${endpoint}`);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
-  const r = await fetch(url, { headers: { "x-apisports-key": cfg.apiKey } });
-  const d = await r.json();
-  return d.errors && Object.keys(d.errors).length ? null : d;
+  if (!cfg.apiKey) { toast("Configure sua API Key.","error"); return null; }
+  const url=new URL(`${AF_BASE}${endpoint}`);
+  Object.entries(params).forEach(([k,v])=>url.searchParams.set(k,v));
+  const r=await fetch(url,{headers:{"x-apisports-key":cfg.apiKey}});
+  const d=await r.json();
+  return (d.errors&&Object.keys(d.errors).length)?null:d;
+}
+
+// ── Auto-refresh ──────────────────────────────────────────────────────────
+function toggleAutoRefresh(on) { on ? startAutoRefresh() : stopAutoRefresh(); }
+
+function startAutoRefresh() {
+  const interval = parseInt($("auto-interval").value);
+  autoCountVal = interval;
+  updateCountdown();
+  autoCountTimer = setInterval(async () => {
+    autoCountVal--;
+    updateCountdown();
+    if (autoCountVal <= 0) {
+      autoCountVal = parseInt($("auto-interval").value);
+      await doAutoRefresh();
+    }
+  }, 1000);
+}
+
+function stopAutoRefresh() {
+  clearInterval(autoCountTimer);
+  autoCountTimer = null;
+  $("auto-countdown").textContent = "";
+}
+
+function changeAutoInterval() {
+  if ($("auto-tog").checked) { stopAutoRefresh(); startAutoRefresh(); }
+}
+
+function updateCountdown() {
+  const s = autoCountVal;
+  $("auto-countdown").textContent = s >= 60
+    ? Math.floor(s/60)+"m"+("0"+(s%60)).slice(-2)
+    : s+"s";
+}
+
+async function doAutoRefresh() {
+  if (!S.selectedId) return;
+  try {
+    const fid = S.selectedId;
+    const f   = S.preview?.fixture;
+    const [fxR, evR, lnR, stR] = await Promise.all([
+      af("/fixtures",            {id:fid}),
+      af("/fixtures/events",     {fixture:fid}),
+      af("/fixtures/lineups",    {fixture:fid}),
+      af("/fixtures/statistics", {fixture:fid}),
+    ]);
+    S.preview  = { fixture:fxR?.response?.[0]||null, eventos:evR?.response||[], escalacao:lnR?.response||[] };
+    S.statsData = stR?.response || [];
+    // Mantém standings se já carregados; atualiza se tab ativa
+    if (S.activeTab === "stand" && f) {
+      const sdR = await af("/standings",{league:f.league.id,season:f.league.season});
+      S.standData = sdR?.response?.[0] || null;
+    }
+    renderPreview();
+    broadcastState();
+    $("last-update").textContent = `🔄 ${new Date().toLocaleTimeString("pt-BR")}`;
+    // Auto-sync planilha
+    if ($("auto-sync").checked && S.sheetLoaded && cfg.scriptUrl) {
+      await enviarSheets();
+    }
+  } catch(e) { console.error("Auto-refresh:", e); }
 }
 
 // ── Buscar jogos ──────────────────────────────────────────────────────────
 async function buscarJogos() {
-  if (!cfg.apiKey) { document.getElementById("config-details").open = true; toast("Configure sua API Key.", "error"); return; }
-  setLoading("btn-buscar", true, "Buscando...");
+  if (!cfg.apiKey) { document.getElementById("config-details").open=true; toast("Configure sua API Key.","error"); return; }
+  setLoading("btn-buscar",true,"Buscando...");
   try {
-    const [lR, nsR] = await Promise.all([
-      af("/fixtures", { live:"all" }),
-      af("/fixtures", { date:hoje(), status:"NS" }),
+    const [lR,nsR] = await Promise.all([
+      af("/fixtures",{live:"all"}),
+      af("/fixtures",{date:hoje(),status:"NS"}),
     ]);
-    const live = lR?.response || [];
-    const agora = Date.now(), em4h = agora + 4*3600*1000;
-    const upcoming = (nsR?.response || []).filter(f => {
-      const t = new Date(f.fixture.date).getTime();
-      return t >= agora && t <= em4h;
+    const live = lR?.response||[];
+    const agora=Date.now(), em4h=agora+4*3600*1000;
+    const upcoming=(nsR?.response||[]).filter(f=>{
+      const t=new Date(f.fixture.date).getTime(); return t>=agora&&t<=em4h;
     });
-    S.fixtures = { live, upcoming };
+    S.fixtures={live,upcoming};
     renderLista();
-    $("last-update").textContent = `🕐 ${new Date().toLocaleTimeString("pt-BR")}`;
-  } catch(e) { toast("Erro: " + e.message, "error"); }
-  finally { setLoading("btn-buscar", false, "🔍 Buscar Jogos"); }
+    $("last-update").textContent=`🕐 ${new Date().toLocaleTimeString("pt-BR")}`;
+  } catch(e){toast("Erro: "+e.message,"error");}
+  finally{setLoading("btn-buscar",false,"🔍 Buscar Jogos");}
 }
 
 // ── Selecionar jogo ───────────────────────────────────────────────────────
 async function selecionarJogo(fid) {
-  S.selectedId = fid; S.activeTab = "geral"; S.statsData = null; S.standData = null;
+  S.selectedId=fid; S.activeTab="geral"; S.statsData=null; S.standData=null;
   renderLista();
-  $("main").innerHTML = `<div class="empty-state"><span class="spinner" style="width:32px;height:32px;border-width:3px;color:var(--purple-lt)"></span><p class="empty-sub" style="margin-top:14px">Carregando...</p></div>`;
+  $("main").innerHTML=`<div class="empty-state"><span class="spinner" style="width:32px;height:32px;border-width:3px;color:var(--purple-lt)"></span><p class="empty-sub" style="margin-top:14px">Carregando...</p></div>`;
   try {
-    const [fxR, evR, lnR] = await Promise.all([
-      af("/fixtures",         { id:fid }),
-      af("/fixtures/events",  { fixture:fid }),
-      af("/fixtures/lineups", { fixture:fid }),
+    const [fxR,evR,lnR]=await Promise.all([
+      af("/fixtures",        {id:fid}),
+      af("/fixtures/events", {fixture:fid}),
+      af("/fixtures/lineups",{fixture:fid}),
     ]);
-    S.preview = { fixture:fxR?.response?.[0]||null, eventos:evR?.response||[], escalacao:lnR?.response||[] };
+    S.preview={fixture:fxR?.response?.[0]||null,eventos:evR?.response||[],escalacao:lnR?.response||[]};
     renderPreview();
-  } catch(e) { toast("Erro: " + e.message, "error"); }
+    broadcastState();
+  } catch(e){toast("Erro: "+e.message,"error");}
 }
 
-// ── Sheets ────────────────────────────────────────────────────────────────
+// ── Google Sheets ─────────────────────────────────────────────────────────
 async function enviarSheets() {
-  if (!cfg.scriptUrl) { toast("Configure a URL do Apps Script.", "error"); document.getElementById("config-details").open = true; return false; }
-  await fetch(cfg.scriptUrl, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain"}, body:JSON.stringify(S.preview) });
+  if (!cfg.scriptUrl) { toast("Configure a URL do Apps Script.","error"); document.getElementById("config-details").open=true; return false; }
+  await fetch(cfg.scriptUrl,{
+    method:"POST", mode:"no-cors",
+    headers:{"Content-Type":"text/plain"},
+    body: JSON.stringify({
+      fixture:       S.preview?.fixture,
+      eventos:       S.preview?.eventos       || [],
+      escalacao:     S.preview?.escalacao     || [],
+      estatisticas:  S.statsData              || [],
+      classificacao: S.standData              || null,
+    }),
+  });
   return true;
 }
+
 async function carregarPlanilha() {
-  setLoading("btn-carregar", true, "Escrevendo...");
-  try { await enviarSheets(); S.sheetLoaded = true; toast("✅ Planilha carregada!"); renderActions(); }
-  catch(e) { toast("Erro: " + e.message, "error"); }
-  finally { setLoading("btn-carregar", false, "📊 Carregar Planilha"); }
-}
-async function atualizarPlanilha() {
-  setLoading("btn-atualizar", true, "Atualizando...");
+  if (!S.preview) return;
+  setLoading("btn-carregar",true,"Buscando stats...");
   try {
-    const fid = S.selectedId;
-    const [fxR, evR, lnR] = await Promise.all([
-      af("/fixtures",         { id:fid }),
-      af("/fixtures/events",  { fixture:fid }),
-      af("/fixtures/lineups", { fixture:fid }),
+    // Garante que stats e standings estão carregados antes de enviar
+    const f = S.preview.fixture;
+    const fetches = [];
+    if (!S.statsData || !S.statsData.length)
+      fetches.push(af("/fixtures/statistics",{fixture:S.selectedId}).then(d=>{S.statsData=d?.response||[];}));
+    if (!S.standData && f)
+      fetches.push(af("/standings",{league:f.league.id,season:f.league.season}).then(d=>{S.standData=d?.response?.[0]||null;}));
+    if (fetches.length) await Promise.all(fetches);
+
+    setLoading("btn-carregar",true,"Escrevendo...");
+    await enviarSheets();
+    S.sheetLoaded=true;
+    toast("✅ Planilha carregada com stats e classificação!");
+    renderActions();
+    broadcastState();
+  } catch(e){toast("Erro: "+e.message,"error");}
+  finally{setLoading("btn-carregar",false,"📊 Carregar Planilha");}
+}
+
+async function atualizarPlanilha() {
+  setLoading("btn-atualizar",true,"Atualizando...");
+  try {
+    const fid=S.selectedId, f=S.preview?.fixture;
+    const [fxR,evR,lnR,stR]=await Promise.all([
+      af("/fixtures",            {id:fid}),
+      af("/fixtures/events",     {fixture:fid}),
+      af("/fixtures/lineups",    {fixture:fid}),
+      af("/fixtures/statistics", {fixture:fid}),
     ]);
-    S.preview = { fixture:fxR?.response?.[0]||null, eventos:evR?.response||[], escalacao:lnR?.response||[] };
-    S.statsData = null; S.standData = null;
-    await enviarSheets(); toast("✅ Planilha atualizada!"); renderPreview();
-  } catch(e) { toast("Erro: " + e.message, "error"); }
-  finally { setLoading("btn-atualizar", false, "🔄 Atualizar"); }
+    S.preview  = {fixture:fxR?.response?.[0]||null,eventos:evR?.response||[],escalacao:lnR?.response||[]};
+    S.statsData = stR?.response||[];
+    if (f) {
+      const sdR=await af("/standings",{league:f.league.id,season:f.league.season});
+      S.standData=sdR?.response?.[0]||null;
+    }
+    await enviarSheets();
+    toast("✅ Planilha atualizada!");
+    renderPreview();
+    broadcastState();
+  } catch(e){toast("Erro: "+e.message,"error");}
+  finally{setLoading("btn-atualizar",false,"🔄 Atualizar");}
 }
 
 // ── Render: lista ─────────────────────────────────────────────────────────
 function renderLista() {
-  const { live=[], upcoming=[] } = S.fixtures;
-  const fl = live.filter(isVisible), fu = upcoming.filter(isVisible);
-  if (!fl.length && !fu.length) {
-    $("lista-jogos").innerHTML = `<p style="color:var(--muted);font-size:12px;padding:12px 4px">Nenhum jogo nas competições selecionadas.</p>`;
-    return;
-  }
-  let h = "";
-  if (fl.length) { h += `<div class="section-label live-label">🔴 Ao Vivo · ${fl.length}</div>`; fl.forEach(f => h += cardHTML(f)); }
-  if (fu.length) { h += `<div class="section-label up-label">🕐 Próximas 4h · ${fu.length}</div>`; fu.forEach(f => h += cardHTML(f)); }
-  $("lista-jogos").innerHTML = h;
+  const {live=[],upcoming=[]}=S.fixtures;
+  const fl=live.filter(isVisible), fu=upcoming.filter(isVisible);
+  if (!fl.length&&!fu.length) { $("lista-jogos").innerHTML=`<p style="color:var(--muted);font-size:12px;padding:12px 4px">Nenhum jogo nas competições selecionadas.</p>`; return; }
+  let h="";
+  if (fl.length) { h+=`<div class="section-label live-label">🔴 Ao Vivo · ${fl.length}</div>`; fl.forEach(f=>h+=cardHTML(f)); }
+  if (fu.length) { h+=`<div class="section-label up-label">🕐 Próximas 4h · ${fu.length}</div>`; fu.forEach(f=>h+=cardHTML(f)); }
+  $("lista-jogos").innerHTML=h;
 }
 function cardHTML(f) {
-  const fid = f.fixture.id, st = f.fixture.status.short;
-  const live = ["1H","2H","HT","ET","P","BT","LIVE"].includes(st);
-  const min = f.fixture.status.elapsed;
-  const gh = f.goals.home ?? "—", ga = f.goals.away ?? "—";
-  const hr = new Date(f.fixture.date).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-  const badge = live ? `<span class="badge badge-live">● ${min}'</span>` : `<span class="badge badge-upcoming">🕐 ${hr}</span>`;
-  const sel = S.selectedId === fid ? " selected" : "";
+  const fid=f.fixture.id, st=f.fixture.status.short;
+  const live=["1H","2H","HT","ET","P","BT","LIVE"].includes(st);
+  const min=f.fixture.status.elapsed;
+  const gh=f.goals.home??"—", ga=f.goals.away??"—";
+  const hr=new Date(f.fixture.date).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  const badge=live?`<span class="badge badge-live">● ${min}'</span>`:`<span class="badge badge-upcoming">🕐 ${hr}</span>`;
+  const sel=S.selectedId===fid?" selected":"";
   return `<div class="match-card ${live?"live":"upcoming"}${sel}" onclick="selecionarJogo(${fid})">
     <div class="card-top"><span class="league">${f.league.name}</span>${badge}</div>
     <div class="card-body">
@@ -464,19 +614,19 @@ function cardHTML(f) {
 
 // ── Render: preview ───────────────────────────────────────────────────────
 function renderPreview() {
-  const { fixture:f, eventos, escalacao } = S.preview;
+  const {fixture:f,eventos,escalacao}=S.preview;
   if (!f) return;
-  const gh = f.goals.home ?? 0, ga = f.goals.away ?? 0;
-  const min = f.fixture.status.elapsed;
-  const live = ["1H","2H","HT","ET","P","BT","LIVE"].includes(f.fixture.status.short);
-  const ended = ["FT","AET","PEN"].includes(f.fixture.status.short);
+  const gh=f.goals.home??0, ga=f.goals.away??0;
+  const min=f.fixture.status.elapsed;
+  const live=["1H","2H","HT","ET","P","BT","LIVE"].includes(f.fixture.status.short);
+  const ended=["FT","AET","PEN"].includes(f.fixture.status.short);
 
-  $("main").innerHTML = `
+  $("main").innerHTML=`
     <div class="scoreboard">
       <div class="sb-header">
         <img src="${f.league.logo}" style="height:16px;vertical-align:middle;margin-right:6px;opacity:.8" onerror="this.style.display='none'">
         <span class="sb-liga">${f.league.name} · ${f.league.country}</span>
-        ${min ? `<span class="sb-minute">${min}'</span>` : ""}
+        ${min?`<span class="sb-minute">${min}'</span>`:""}
         <div class="sb-status">${f.fixture.status.long}</div>
       </div>
       <div class="sb-body">
@@ -495,23 +645,17 @@ function renderPreview() {
 
     <div id="tab-geral" class="tab-content active">
       <div class="detail-grid">
-        <div class="detail-box">
-          <div class="section-title">Eventos</div>
-          ${eventosHTML(eventos, f.teams.home.name)}
-        </div>
-        <div class="detail-box">
-          <div class="section-title">Escalação</div>
-          ${escalacaoHTML(escalacao)}
-        </div>
+        <div class="detail-box"><div class="section-title">Eventos</div>${eventosHTML(eventos,f.teams.home.name)}</div>
+        <div class="detail-box"><div class="section-title">Escalação</div>${escalacaoHTML(escalacao)}</div>
       </div>
     </div>
 
     <div id="tab-stats" class="tab-content">
       <div class="detail-box">
         <div class="section-title">Estatísticas da Partida</div>
-        ${live || ended
-          ? `<div style="text-align:center;padding:16px"><button class="btn btn-ghost" onclick="carregarStats()">Carregar estatísticas →</button></div>`
-          : `<p style="color:var(--muted);font-size:12px;padding:8px 0">Disponível após o início da partida.</p>`}
+        ${live||ended
+          ?`<div style="text-align:center;padding:16px"><button class="btn btn-ghost" onclick="carregarStats()">Carregar estatísticas →</button></div>`
+          :`<p style="color:var(--muted);font-size:12px;padding:8px 0">Disponível após o início da partida.</p>`}
       </div>
     </div>
 
@@ -524,58 +668,46 @@ function renderPreview() {
 }
 
 function switchTab(tab) {
-  S.activeTab = tab;
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
-  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  S.activeTab=tab;
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
   $(`tab-${tab}`)?.classList.add("active");
-  if (tab === "stats" && !S.statsData) carregarStats();
-  if (tab === "stand" && !S.standData) carregarClassificacao();
+  if (tab==="stats"&&!S.statsData)  carregarStats();
+  if (tab==="stand"&&!S.standData)  carregarClassificacao();
 }
-
 function actionsHTML() {
-  return `
-    <button class="btn btn-green" id="btn-carregar" onclick="carregarPlanilha()">📊 Carregar Planilha</button>
-    <button class="btn btn-blue"  id="btn-atualizar" onclick="atualizarPlanilha()" ${!S.sheetLoaded?"disabled":""}>🔄 Atualizar</button>`;
+  return `<button class="btn btn-green" id="btn-carregar" onclick="carregarPlanilha()">📊 Carregar Planilha</button>
+    <button class="btn btn-blue" id="btn-atualizar" onclick="atualizarPlanilha()" ${!S.sheetLoaded?"disabled":""}>🔄 Atualizar</button>`;
 }
-function renderActions() { const el = $("actions-container"); if (el) el.innerHTML = actionsHTML(); }
+function renderActions() { const el=$("actions-container"); if(el)el.innerHTML=actionsHTML(); }
 
 // ── Eventos ───────────────────────────────────────────────────────────────
-function eventosHTML(eventos, home) {
+function eventosHTML(eventos,home) {
   if (!eventos.length) return `<p style="color:var(--muted);font-size:12px;padding:8px 0">Nenhum evento registrado.</p>`;
-  return eventos.map(ev => {
-    const icone = ev.detail === "Red Card" ? "🟥" : (ICONES[ev.type] || "•");
-    const sub = ev.assist?.name && ev.type === "subst" ? ` ↩ ${ev.assist.name}` : "";
-    const lado = ev.team.name === home ? "⬅️" : "➡️";
-    return `<div class="event-row">
-      <span class="ev-min">${ev.time.elapsed}'</span>
-      <span class="ev-icon">${icone}</span>
-      <span class="ev-name">${ev.player.name}${sub}</span>
-      <span class="ev-team">${lado} ${ev.team.name.split(" ")[0]}</span>
-    </div>`;
+  return eventos.map(ev=>{
+    const ico=ev.detail==="Red Card"?"🟥":(ICONES[ev.type]||"•");
+    const sub=ev.assist?.name&&ev.type==="subst"?` ↩ ${ev.assist.name}`:"";
+    const lado=ev.team.name===home?"⬅️":"➡️";
+    return `<div class="event-row"><span class="ev-min">${ev.time.elapsed}'</span><span class="ev-icon">${ico}</span><span class="ev-name">${ev.player.name}${sub}</span><span class="ev-team">${lado} ${ev.team.name.split(" ")[0]}</span></div>`;
   }).join("");
 }
 
 // ── Escalação ─────────────────────────────────────────────────────────────
 function escalacaoHTML(escalacao) {
   if (!escalacao.length) return `<p style="color:var(--muted);font-size:12px;padding:8px 0">Escalação ainda não disponível.</p>`;
-  return escalacao.map(team => {
-    const tid = team.team.id;
-    const t = p => playerCardHTML(p.player, false, tid);
-    const r = p => playerCardHTML(p.player, true,  tid);
+  return escalacao.map(team=>{
+    const tid=team.team.id;
+    const t=p=>playerCardHTML(p.player,false,tid), r=p=>playerCardHTML(p.player,true,tid);
     return `<div class="team-lineup">
-      <div class="lineup-header">
-        <img src="${team.team.logo}" onerror="this.style.display='none'">
-        <span>${team.team.name}</span>
-        <span class="formation">${team.formation}</span>
-      </div>
+      <div class="lineup-header"><img src="${team.team.logo}" onerror="this.style.display='none'"><span>${team.team.name}</span><span class="formation">${team.formation}</span></div>
       <div class="players-grid">${team.startXI.map(t).join("")}</div>
       <div class="subs-label">Reservas</div>
       <div class="players-grid">${team.substitutes.map(r).join("")}</div>
     </div>`;
   }).join("");
 }
-function playerCardHTML(pl, sub, tid) {
-  const foto = `https://media.api-sports.io/football/players/${pl.id}.png`;
+function playerCardHTML(pl,sub,tid) {
+  const foto=`https://media.api-sports.io/football/players/${pl.id}.png`;
   return `<div class="player-card" style="${sub?'opacity:.5':''}" onclick="abrirJogador(${pl.id},${tid})">
     <img src="${foto}" onerror="this.src='https://placehold.co/40x40/1C0D2E/7A5A9A?text=${pl.number}'">
     <div class="player-num">#${pl.number}</div>
@@ -584,187 +716,123 @@ function playerCardHTML(pl, sub, tid) {
   </div>`;
 }
 
-// ── Estatísticas da partida ───────────────────────────────────────────────
+// ── Stats (lazy) ──────────────────────────────────────────────────────────
 async function carregarStats() {
-  $("tab-stats").innerHTML = `<div class="detail-box"><div class="section-title">Estatísticas da Partida</div><div style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner"></span></div></div>`;
-  const d = await af("/fixtures/statistics", { fixture:S.selectedId });
-  S.statsData = d?.response || [];
+  $("tab-stats").innerHTML=`<div class="detail-box"><div class="section-title">Estatísticas</div><div style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner"></span></div></div>`;
+  const d=await af("/fixtures/statistics",{fixture:S.selectedId});
+  S.statsData=d?.response||[];
+  broadcastState();
   renderStats();
 }
 function renderStats() {
-  const data = S.statsData;
-  if (!data || data.length < 2) {
-    $("tab-stats").innerHTML = `<div class="detail-box"><div class="section-title">Estatísticas</div><p style="color:var(--muted);font-size:12px">Não disponível para esta partida.</p></div>`;
-    return;
+  const data=S.statsData;
+  if (!data||data.length<2) { $("tab-stats").innerHTML=`<div class="detail-box"><div class="section-title">Estatísticas</div><p style="color:var(--muted);font-size:12px">Não disponível para esta partida.</p></div>`; return; }
+  const hS=data[0].statistics, aS=data[1].statistics;
+  const hN=data[0].team.name,  aN=data[1].team.name;
+  const get=(arr,t)=>(arr.find(s=>s.type===t)||{}).value??null;
+  function row(label,hv,av,isPct=false) {
+    hv=hv??0;av=av??0;
+    const hn=parseInt(hv)||0,an=parseInt(av)||0;
+    let ph,pa;
+    if(isPct){ph=hn;pa=100-hn;}else{const t=hn+an;ph=t>0?Math.round(hn/t*100):50;pa=100-ph;}
+    return `<div class="stat-row"><div class="stat-label">${label}</div><div class="stat-bar-wrap"><span class="stat-val right">${hv}</span><div class="stat-bar-track"><div class="bar-home" style="width:${ph}%"></div><div class="bar-away" style="width:${pa}%"></div></div><span class="stat-val">${av}</span></div></div>`;
   }
-  const hS = data[0].statistics, aS = data[1].statistics;
-  const hN = data[0].team.name,  aN = data[1].team.name;
-  const get = (arr, type) => arr.find(x => x.type === type)?.value ?? null;
-
-  function row(label, hv, av, isPct=false) {
-    hv = hv ?? 0; av = av ?? 0;
-    const hn = parseInt(hv)||0, an = parseInt(av)||0;
-    let ph, pa;
-    if (isPct) { ph = hn; pa = 100-hn; }
-    else { const t = hn+an; ph = t>0?Math.round(hn/t*100):50; pa = 100-ph; }
-    return `<div class="stat-row">
-      <div class="stat-label">${label}</div>
-      <div class="stat-bar-wrap">
-        <span class="stat-val right">${hv}</span>
-        <div class="stat-bar-track"><div class="bar-home" style="width:${ph}%"></div><div class="bar-away" style="width:${pa}%"></div></div>
-        <span class="stat-val">${av}</span>
-      </div>
-    </div>`;
-  }
-
-  $("tab-stats").innerHTML = `<div class="detail-box">
+  $("tab-stats").innerHTML=`<div class="detail-box">
     <div class="section-title">Estatísticas da Partida</div>
     <div class="stat-legend"><span class="home-label">${hN}</span><span class="away-label">${aN}</span></div>
-    ${row("Posse de Bola (%)",    get(hS,"Ball Possession"),   get(aS,"Ball Possession"), true)}
-    ${row("Chutes no Gol",        get(hS,"Shots on Goal"),     get(aS,"Shots on Goal"))}
-    ${row("Chutes para Fora",     get(hS,"Shots off Goal"),    get(aS,"Shots off Goal"))}
-    ${row("Total de Chutes",      get(hS,"Total Shots"),       get(aS,"Total Shots"))}
-    ${row("Escanteios",           get(hS,"Corner Kicks"),      get(aS,"Corner Kicks"))}
-    ${row("Faltas",               get(hS,"Fouls"),             get(aS,"Fouls"))}
-    ${row("Cartões Amarelos",     get(hS,"Yellow Cards"),      get(aS,"Yellow Cards"))}
-    ${row("Cartões Vermelhos",    get(hS,"Red Cards"),         get(aS,"Red Cards"))}
-    ${row("Impedimentos",         get(hS,"Offsides"),          get(aS,"Offsides"))}
-    ${row("Defesas (goleiro)",    get(hS,"Goalkeeper Saves"),  get(aS,"Goalkeeper Saves"))}
-    ${row("Passes Certos",        get(hS,"Passes accurate"),   get(aS,"Passes accurate"))}
+    ${row("Posse de Bola (%)",   get(hS,"Ball Possession"),  get(aS,"Ball Possession"),true)}
+    ${row("Chutes no Gol",       get(hS,"Shots on Goal"),    get(aS,"Shots on Goal"))}
+    ${row("Chutes para Fora",    get(hS,"Shots off Goal"),   get(aS,"Shots off Goal"))}
+    ${row("Total de Chutes",     get(hS,"Total Shots"),      get(aS,"Total Shots"))}
+    ${row("Escanteios",          get(hS,"Corner Kicks"),     get(aS,"Corner Kicks"))}
+    ${row("Faltas",              get(hS,"Fouls"),            get(aS,"Fouls"))}
+    ${row("Cartões Amarelos",    get(hS,"Yellow Cards"),     get(aS,"Yellow Cards"))}
+    ${row("Cartões Vermelhos",   get(hS,"Red Cards"),        get(aS,"Red Cards"))}
+    ${row("Impedimentos",        get(hS,"Offsides"),         get(aS,"Offsides"))}
+    ${row("Defesas (goleiro)",   get(hS,"Goalkeeper Saves"), get(aS,"Goalkeeper Saves"))}
+    ${row("Passes Certos",       get(hS,"Passes accurate"),  get(aS,"Passes accurate"))}
   </div>`;
 }
 
-// ── Classificação ─────────────────────────────────────────────────────────
+// ── Classificação (lazy) ──────────────────────────────────────────────────
 async function carregarClassificacao() {
-  $("stand-box").innerHTML = `<div class="section-title">Classificação</div><div style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner"></span></div>`;
-  const f = S.preview?.fixture;
+  $("stand-box").innerHTML=`<div class="section-title">Classificação</div><div style="text-align:center;padding:40px;color:var(--muted)"><span class="spinner"></span></div>`;
+  const f=S.preview?.fixture;
   if (!f) return;
-  const d = await af("/standings", { league:f.league.id, season:f.league.season });
-  S.standData = d?.response?.[0] || null;
+  const d=await af("/standings",{league:f.league.id,season:f.league.season});
+  S.standData=d?.response?.[0]||null;
+  broadcastState();
   renderStandings();
 }
 function renderStandings() {
-  const f    = S.preview?.fixture;
-  const data = S.standData;
-  if (!data) {
-    $("stand-box").innerHTML = `<div class="section-title">Classificação</div><p style="color:var(--muted);font-size:12px">Não disponível para esta competição.</p>`;
-    return;
-  }
-  const table = data.standings?.[0] || [];
-  const hid = f?.teams?.home?.id, aid = f?.teams?.away?.id;
-  const rows = table.map(s => {
-    const hl = s.team.id===hid||s.team.id===aid ? " highlighted" : "";
-    return `<tr class="${hl}">
-      <td>${s.rank}</td>
-      <td><div class="team-cell"><img src="${s.team.logo}" onerror="this.style.display='none'"> ${s.team.name}</div></td>
-      <td class="pts">${s.points}</td>
-      <td>${s.all.played}</td>
-      <td>${s.all.win}</td>
-      <td>${s.all.draw}</td>
-      <td>${s.all.lose}</td>
-      <td>${s.goalsDiff>0?'+':''}${s.goalsDiff}</td>
-    </tr>`;
+  const f=S.preview?.fixture, data=S.standData;
+  if (!data) { $("stand-box").innerHTML=`<div class="section-title">Classificação</div><p style="color:var(--muted);font-size:12px">Não disponível.</p>`; return; }
+  const table=data.standings?.[0]||[];
+  const hid=f?.teams?.home?.id, aid=f?.teams?.away?.id;
+  const rows=table.map(s=>{
+    const hl=(s.team.id===hid||s.team.id===aid)?" highlighted":"";
+    return `<tr class="${hl}"><td>${s.rank}</td><td><div class="team-cell"><img src="${s.team.logo}" onerror="this.style.display='none'"> ${s.team.name}</div></td><td class="pts">${s.points}</td><td>${s.all.played}</td><td>${s.all.win}</td><td>${s.all.draw}</td><td>${s.all.lose}</td><td>${s.goalsDiff>0?"+":""}${s.goalsDiff}</td></tr>`;
   }).join("");
-  $("stand-box").innerHTML = `
-    <div class="section-title">Classificação · ${f?.league?.name||''}</div>
-    <div style="overflow-x:auto">
-      <table class="standings-table">
-        <thead><tr><th>#</th><th>Time</th><th>Pts</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
+  $("stand-box").innerHTML=`<div class="section-title">Classificação · ${f?.league?.name||''}</div>
+    <div style="overflow-x:auto"><table class="standings-table">
+      <thead><tr><th>#</th><th>Time</th><th>Pts</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th></tr></thead>
+      <tbody>${rows}</tbody></table></div>
     <p style="font-size:10px;color:var(--muted);margin-top:8px">Times em destaque participam desta partida.</p>`;
 }
 
-// ── Perfil do jogador ─────────────────────────────────────────────────────
-async function abrirJogador(pid, tid) {
+// ── Modal do jogador ──────────────────────────────────────────────────────
+async function abrirJogador(pid,tid) {
   $("modal-overlay").classList.add("open");
-  $("modal-content").innerHTML = `<div style="padding:60px;text-align:center;color:var(--muted)"><span class="spinner" style="width:28px;height:28px;border-width:3px"></span></div>`;
-  const d = await af("/fixtures/players", { fixture:S.selectedId, team:tid });
-  const pl = d?.response?.[0]?.players?.find(p => p.player.id === pid);
-  if (!pl) { $("modal-content").innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted)">Estatísticas não disponíveis.</div>`; return; }
+  $("modal-content").innerHTML=`<div style="padding:60px;text-align:center;color:var(--muted)"><span class="spinner" style="width:28px;height:28px;border-width:3px"></span></div>`;
+  const d=await af("/fixtures/players",{fixture:S.selectedId,team:tid});
+  const pl=d?.response?.[0]?.players?.find(p=>p.player.id===pid);
+  if (!pl) { $("modal-content").innerHTML=`<div style="padding:40px;text-align:center;color:var(--muted)">Estatísticas não disponíveis.</div>`; return; }
   renderModal(pl);
 }
-
 function renderModal(pl) {
-  const p  = pl.player;
-  const s  = pl.statistics?.[0] || {};
-  const foto = `https://media.api-sports.io/football/players/${p.id}.png`;
-  const rating = parseFloat(s.games?.rating||0);
-
-  function cell(val, label, cls="") {
-    return `<div class="stat-cell"><div class="stat-cell-val ${cls}">${val??'—'}</div><div class="stat-cell-label">${label}</div></div>`;
-  }
-
-  $("modal-content").innerHTML = `
+  const p=pl.player, s=pl.statistics?.[0]||{};
+  const foto=`https://media.api-sports.io/football/players/${p.id}.png`;
+  const rating=parseFloat(s.games?.rating||0);
+  function cell(val,label){return `<div class="stat-cell"><div class="stat-cell-val">${val??'—'}</div><div class="stat-cell-label">${label}</div></div>`;}
+  $("modal-content").innerHTML=`
     <div class="modal-header">
       <img src="${foto}" onerror="this.src='https://placehold.co/64x64/1C0D2E/9B59D0?text=${s.games?.number||'?'}'">
-      <div>
-        <div class="modal-player-name">${p.name}</div>
-        <div class="modal-player-meta">#${s.games?.number||'—'} · ${s.games?.position||'—'}</div>
-      </div>
+      <div><div class="modal-player-name">${p.name}</div><div class="modal-player-meta">#${s.games?.number||'—'} · ${s.games?.position||'—'}</div></div>
       <button class="modal-close" onclick="$('modal-overlay').classList.remove('open')">✕</button>
     </div>
     <div class="modal-body">
       <div class="modal-section">
         <div class="modal-section-title">Estatísticas da Partida</div>
         <div class="stat-grid">
-          ${cell(s.games?.minutes||'—',      'Minutos')}
-          ${cell(s.goals?.total||0,          'Gols')}
-          ${cell(s.goals?.assists||0,        'Assistências')}
-          ${cell((s.shots?.total||0)+' ('+(s.shots?.on||0)+')', 'Chutes (alvo)')}
-          ${cell(s.passes?.total||0,         'Passes')}
-          ${cell(s.passes?.accuracy?s.passes.accuracy+'%':'—', 'Precisão')}
-          ${cell(s.tackles?.total||0,        'Desarmes')}
-          ${cell(s.cards?.yellow||0,         '🟨 Amarelos')}
-          ${cell(s.cards?.red||0,            '🟥 Vermelhos')}
+          ${cell(s.games?.minutes||'—','Minutos')}${cell(s.goals?.total||0,'Gols')}${cell(s.goals?.assists||0,'Assistências')}
+          ${cell((s.shots?.total||0)+'('+(s.shots?.on||0)+')','Chutes(alvo)')}${cell(s.passes?.total||0,'Passes')}${cell(s.passes?.accuracy?s.passes.accuracy+'%':'—','Precisão')}
+          ${cell(s.tackles?.total||0,'Desarmes')}${cell(s.cards?.yellow||0,'🟨 Amarelos')}${cell(s.cards?.red||0,'🟥 Vermelhos')}
         </div>
-        ${rating>0?`<div style="text-align:center;margin-top:14px;color:var(--muted);font-size:13px">Nota da partida: <span style="font-family:'Montserrat';font-size:26px;font-weight:900;color:var(--green)">${rating.toFixed(1)}</span></div>`:''}
+        ${rating>0?`<div style="text-align:center;margin-top:14px;color:var(--muted);font-size:13px">Nota: <span style="font-family:'Montserrat';font-size:26px;font-weight:900;color:var(--green)">${rating.toFixed(1)}</span></div>`:''}
       </div>
       <div class="modal-section">
-        <div class="modal-section-title">
-          Temporada atual
-          <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="carregarHistorico(${p.id})">Carregar →</button>
-        </div>
-        <div id="modal-hist" style="color:var(--muted);font-size:12px">Clique em "Carregar" para ver as estatísticas da temporada.</div>
+        <div class="modal-section-title">Temporada atual <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="carregarHistorico(${p.id})">Carregar →</button></div>
+        <div id="modal-hist" style="color:var(--muted);font-size:12px">Clique em "Carregar" para ver estatísticas da temporada.</div>
       </div>
     </div>`;
 }
-
 async function carregarHistorico(pid) {
-  $("modal-hist").innerHTML = `<div style="text-align:center;padding:16px;color:var(--muted)"><span class="spinner"></span></div>`;
-  const season = S.preview?.fixture?.league?.season || new Date().getFullYear();
-  const d = await af("/players", { id:pid, season });
-  const data = d?.response?.[0];
-  if (!data) { $("modal-hist").innerHTML = `<p style="color:var(--muted);font-size:12px">Histórico não disponível.</p>`; return; }
-
-  function cell(val, label) {
-    return `<div class="stat-cell"><div class="stat-cell-val">${val??'—'}</div><div class="stat-cell-label">${label}</div></div>`;
-  }
-
-  const html = data.statistics.map(s => `
+  $("modal-hist").innerHTML=`<div style="text-align:center;padding:16px;color:var(--muted)"><span class="spinner"></span></div>`;
+  const season=S.preview?.fixture?.league?.season||new Date().getFullYear();
+  const d=await af("/players",{id:pid,season});
+  const data=d?.response?.[0];
+  if (!data) { $("modal-hist").innerHTML=`<p style="color:var(--muted);font-size:12px">Histórico não disponível.</p>`; return; }
+  function cell(val,label){return `<div class="stat-cell"><div class="stat-cell-val">${val??'—'}</div><div class="stat-cell-label">${label}</div></div>`;}
+  $("modal-hist").innerHTML=data.statistics.map(s=>`
     <div style="margin-bottom:10px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text-mid)">
         <img src="${s.team.logo}" style="width:18px;height:18px;object-fit:contain" onerror="this.style.display='none'">
-        ${s.team.name}
-        <span style="color:var(--muted);font-weight:400">· ${s.league.name}</span>
+        ${s.team.name} <span style="color:var(--muted);font-weight:400">· ${s.league.name}</span>
       </div>
-      <div class="stat-grid">
-        ${cell(s.games?.appearences, 'Jogos')}
-        ${cell(s.goals?.total||0,    'Gols')}
-        ${cell(s.goals?.assists||0,  'Assistências')}
-        ${cell(s.games?.minutes,     'Minutos')}
-        ${cell(s.cards?.yellow||0,   '🟨 Amarelos')}
-        ${cell(s.cards?.red||0,      '🟥 Vermelhos')}
-      </div>
+      <div class="stat-grid">${cell(s.games?.appearences,'Jogos')}${cell(s.goals?.total||0,'Gols')}${cell(s.goals?.assists||0,'Assistências')}${cell(s.games?.minutes,'Minutos')}${cell(s.cards?.yellow||0,'🟨')}${cell(s.cards?.red||0,'🟥')}</div>
     </div>`).join("");
-
-  $("modal-hist").innerHTML = html;
 }
-
-function fecharModalClick(e) {
-  if (e.target === $("modal-overlay")) $("modal-overlay").classList.remove("open");
-}
+function fecharModalClick(e) { if(e.target===$("modal-overlay"))$("modal-overlay").classList.remove("open"); }
 </script>
 </body>
 </html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Na Rede · Transmissão ao Vivo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#5C1A8A;--purple-mid:#7B2FBE;--purple-lt:#9B59D0;
+  --bg:#06040f;--surface:rgba(255,255,255,.04);--border:rgba(92,26,138,.4);
+  --text:#fff;--text-dim:rgba(255,255,255,.6);--muted:rgba(255,255,255,.35);
+  --live:#FF3B5C;--upcoming:#00C4FF;--green:#00D46A;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif}
+
+.broadcast{display:grid;grid-template-rows:auto auto 1fr auto;width:100vw;height:100vh}
+
+/* ── Banners ── */
+.banner{display:flex;align-items:center;justify-content:center;overflow:hidden;transition:all .3s}
+.banner.hidden{display:none}
+.banner-img{width:100%;height:100%;object-fit:cover}
+.banner-text{font-family:'Montserrat';font-weight:900;font-size:clamp(14px,2vw,24px);letter-spacing:2px;text-align:center;width:100%}
+#top-banner{height:80px;background:#1a0a28;border-bottom:2px solid var(--border)}
+#bot-banner{height:72px;background:#0d0820;border-top:2px solid var(--border)}
+
+/* ── Score ── */
+#score-section{
+  background:linear-gradient(135deg,#3D0D6B 0%,var(--purple) 40%,#3D0D6B 100%);
+  border-bottom:2px solid rgba(155,89,208,.5);
+  padding:0 32px;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;min-height:130px;position:relative;
+}
+#score-section::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(155,89,208,.12) 0%,transparent 70%);pointer-events:none}
+
+.score-league{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:160px}
+.league-logo{height:28px;object-fit:contain}
+.league-name{font-size:11px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.league-country{font-size:10px;color:rgba(255,255,255,.4)}
+
+.score-center{display:flex;align-items:center;justify-content:center;gap:24px;flex:1}
+.score-team{display:flex;align-items:center;gap:14px}
+.score-team.away{flex-direction:row-reverse}
+.score-team-logo{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
+.score-team-name{font-family:'Montserrat';font-size:clamp(14px,2vw,22px);font-weight:900;max-width:180px;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.score-numbers{text-align:center}
+.score-digits{font-family:'Montserrat';font-size:clamp(52px,8vw,88px);font-weight:900;line-height:1;letter-spacing:6px;text-shadow:0 0 40px rgba(155,89,208,.6)}
+.score-sep{color:rgba(255,255,255,.3)}
+.score-ht{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+
+.score-status{display:flex;flex-direction:column;align-items:flex-end;gap:6px;min-width:140px}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,59,92,.2);border:1px solid rgba(255,59,92,.5);color:var(--live);font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--live);animation:pulse 1.2s ease infinite}
+.status-text{font-size:11px;color:var(--muted)}
+.minute-large{font-family:'Montserrat';font-size:28px;font-weight:900;color:var(--live)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ── Content ── */
+#content-area{display:grid;grid-template-columns:1fr 1fr;gap:0;overflow:hidden;min-height:0}
+#content-area.hide-left{grid-template-columns:0 1fr}
+#content-area.hide-right{grid-template-columns:1fr 0}
+#content-area.hide-left #left-panel,#content-area.hide-right #right-panel{display:none}
+
+.panel{display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);background:rgba(10,6,20,.6);backdrop-filter:blur(8px)}
+#left-panel{border-left:none;border-bottom:none;border-top:none}
+#right-panel{border-right:none;border-bottom:none;border-top:none}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(92,26,138,.15);flex-shrink:0}
+.panel-title{font-family:'Montserrat';font-size:11px;font-weight:900;letter-spacing:3px;color:var(--purple-lt);text-transform:uppercase}
+.panel-tabs{display:flex;gap:4px}
+.ptab{background:transparent;border:1px solid rgba(92,26,138,.3);color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Inter';font-size:11px;font-weight:600;transition:all .2s}
+.ptab:hover{color:var(--text);border-color:var(--purple-lt)}
+.ptab.active{background:var(--purple);border-color:var(--purple);color:#fff}
+.panel-body{flex:1;overflow-y:auto;padding:12px 16px}
+.panel-body::-webkit-scrollbar{width:4px}
+.panel-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ── Waiting state ── */
+.waiting{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--muted)}
+.waiting-icon{font-size:32px;opacity:.3;animation:bob 2s ease infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.waiting p{font-size:12px;text-align:center;max-width:200px;line-height:1.5}
+
+/* ── Events ── */
+.ev-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.ev-min{width:30px;color:var(--purple-lt);font-size:11px;font-weight:700;flex-shrink:0}
+.ev-ico{width:20px;text-align:center;font-size:14px;flex-shrink:0}
+.ev-name{flex:1;color:var(--text)}
+.ev-team{font-size:10px;color:var(--muted)}
+.no-data{color:var(--muted);font-size:12px;padding:16px 0;text-align:center}
+
+/* ── Stats bars ── */
+.stat-row{margin-bottom:14px}
+.stat-lbl{font-size:10px;color:var(--muted);text-align:center;margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.stat-wrap{display:flex;align-items:center;gap:8px}
+.stat-v{font-size:14px;font-weight:700;width:44px;flex-shrink:0}
+.stat-v.r{text-align:right}
+.stat-track{flex:1;height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;display:flex}
+.bar-h{height:100%;background:linear-gradient(90deg,#7B2FBE,#9B59D0);transition:width .7s ease}
+.bar-a{height:100%;background:linear-gradient(90deg,#0077aa,#00C4FF);transition:width .7s ease}
+.stat-legend{display:flex;justify-content:space-between;margin-bottom:16px;font-size:11px;font-weight:700}
+.leg-h{color:var(--purple-lt)}
+.leg-a{color:var(--upcoming)}
+
+/* ── Standings ── */
+.std-table{width:100%;border-collapse:collapse;font-size:11px}
+.std-table th{color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:5px 6px;border-bottom:1px solid var(--border);text-align:center}
+.std-table th:nth-child(2){text-align:left}
+.std-table td{padding:6px 6px;border-bottom:1px solid rgba(255,255,255,.04);text-align:center;color:var(--text-dim)}
+.std-table td:nth-child(2){text-align:left}
+.std-table tr:hover td{background:rgba(92,26,138,.1)}
+.std-table tr.hl td{background:rgba(92,26,138,.25);color:#fff}
+.std-table .pts{font-weight:700;color:#fff !important}
+.team-cell{display:flex;align-items:center;gap:6px}
+.team-cell img{width:16px;height:16px;object-fit:contain}
+
+/* ── Lineups ── */
+.lineup-team{margin-bottom:18px}
+.lineup-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;font-weight:700}
+.lineup-head img{width:20px;height:20px;object-fit:contain}
+.form-badge{font-size:9px;color:var(--purple-lt);background:rgba(155,89,208,.15);border:1px solid rgba(155,89,208,.3);padding:1px 7px;border-radius:20px}
+.pl-grid{display:flex;flex-wrap:wrap;gap:6px}
+.pl-card{background:rgba(255,255,255,.04);border:1px solid rgba(92,26,138,.3);border-radius:8px;padding:6px;text-align:center;width:62px}
+.pl-card img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:1px solid rgba(92,26,138,.4)}
+.pl-num{font-size:9px;font-weight:700;color:var(--purple-lt);margin-top:3px}
+.pl-name{font-size:8px;color:var(--text-dim);line-height:1.2}
+.pl-pos{font-size:7px;color:var(--muted)}
+.sub-lbl{font-size:9px;color:var(--muted);font-weight:700;margin:8px 0 5px;text-transform:uppercase;letter-spacing:1px}
+
+/* ── Controls ── */
+#ctrl-btn{position:fixed;bottom:80px;right:16px;z-index:200;width:36px;height:36px;border-radius:50%;background:rgba(92,26,138,.8);border:1px solid var(--purple-lt);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(92,26,138,.5);transition:all .2s}
+#ctrl-btn:hover{background:var(--purple);transform:scale(1.1)}
+#ctrl-btn.open{background:var(--purple);border-color:#fff}
+#ctrl-panel{position:fixed;bottom:124px;right:16px;z-index:199;width:280px;background:#120820;border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.6);display:none;max-height:70vh;overflow-y:auto}
+#ctrl-panel.open{display:block}
+#ctrl-panel::-webkit-scrollbar{width:4px}
+#ctrl-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.ctrl-section{margin-bottom:16px}
+.ctrl-title{font-size:10px;font-weight:700;color:var(--purple-lt);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(92,26,138,.3)}
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+.ctrl-label{font-size:12px;color:var(--text-dim);flex:1}
+.ctrl-input{background:#06040f;border:1px solid rgba(92,26,138,.4);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;font-family:'Inter';outline:none;width:100%;margin-top:4px}
+.ctrl-input:focus{border-color:var(--purple-lt)}
+.ctrl-input::placeholder{color:var(--muted)}
+.tog{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0}
+.tog input{opacity:0;width:0;height:0}
+.tog-sl{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);border:1px solid rgba(92,26,138,.4);border-radius:20px;transition:.3s}
+.tog-sl::before{position:absolute;content:'';height:14px;width:14px;left:3px;bottom:2px;background:var(--muted);border-radius:50%;transition:.3s}
+input:checked+.tog-sl{background:var(--purple);border-color:var(--purple-lt)}
+input:checked+.tog-sl::before{transform:translateX(15px);background:#fff}
+.ctrl-btn-sm{background:rgba(92,26,138,.2);border:1px solid rgba(92,26,138,.4);color:var(--purple-lt);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Inter';transition:background .2s;width:100%;margin-top:4px}
+.ctrl-btn-sm:hover{background:rgba(92,26,138,.35)}
+.display-toggles{display:flex;gap:6px;flex-wrap:wrap}
+.dtog{background:rgba(255,255,255,.05);border:1px solid rgba(92,26,138,.3);color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;font-family:'Inter';transition:all .2s}
+.dtog.on{background:var(--purple);border-color:var(--purple-lt);color:#fff}
+
+/* ── Toast ── */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+.toast.success{background:rgba(0,212,106,.15);border:1px solid rgba(0,212,106,.35);color:var(--green)}
+.toast.info{background:rgba(0,196,255,.1);border:1px solid rgba(0,196,255,.3);color:var(--upcoming)}
+</style>
+</head>
+<body>
+
+<div class="broadcast">
+
+  <div class="banner" id="top-banner">
+    <div class="banner-text" id="top-banner-content" style="color:rgba(255,255,255,.2)">
+      BANNER SUPERIOR · Configure no painel ⚙
+    </div>
+  </div>
+
+  <div id="score-section">
+    <div class="score-league" id="score-league">
+      <span class="league-name" style="color:var(--muted)">Aguardando painel principal...</span>
+    </div>
+    <div class="score-center" id="score-center">
+      <div class="waiting"><div class="waiting-icon">📡</div><p>Abra o painel principal, selecione um jogo e os dados aparecerão aqui automaticamente.</p></div>
+    </div>
+    <div class="score-status" id="score-status"></div>
+  </div>
+
+  <div id="content-area">
+    <div class="panel" id="left-panel">
+      <div class="panel-header"><span class="panel-title">Eventos</span></div>
+      <div class="panel-body" id="events-body">
+        <div class="waiting"><div class="waiting-icon">⚽</div><p>Aguardando dados...</p></div>
+      </div>
+    </div>
+    <div class="panel" id="right-panel">
+      <div class="panel-header">
+        <span class="panel-title" id="right-panel-title">Estatísticas</span>
+        <div class="panel-tabs">
+          <button class="ptab active" data-tab="stats"  onclick="setRightTab('stats')">📊 Stats</button>
+          <button class="ptab"        data-tab="stand"  onclick="setRightTab('stand')">🏆 Tabela</button>
+          <button class="ptab"        data-tab="lineup" onclick="setRightTab('lineup')">👥 Escalação</button>
+        </div>
+      </div>
+      <div class="panel-body" id="right-body">
+        <div class="waiting"><div class="waiting-icon">📊</div><p>Aguardando dados...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="banner" id="bot-banner">
+    <div class="banner-text" id="bot-banner-content" style="color:rgba(255,255,255,.2)">
+      BANNER INFERIOR · Configure no painel ⚙
+    </div>
+  </div>
+</div>
+
+<button id="ctrl-btn" onclick="toggleCtrl()" title="Controles (tecla C)">⚙</button>
+
+<div id="ctrl-panel">
+  <div class="ctrl-section">
+    <div class="ctrl-title">📡 Conexão</div>
+    <div style="font-size:11px;color:var(--text-dim);line-height:1.5;margin-bottom:8px">
+      Esta tela espelha o painel principal via BroadcastChannel. Abra ambos no mesmo navegador.
+    </div>
+    <button class="ctrl-btn-sm" onclick="requestState()">🔄 Solicitar dados agora</button>
+    <div id="conn-status" style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center"></div>
+  </div>
+
+  <div class="ctrl-section">
+    <div class="ctrl-title">🖥 Exibição</div>
+    <div class="display-toggles">
+      <button class="dtog on" id="dtog-left"  onclick="togglePanel('left')">Eventos</button>
+      <button class="dtog on" id="dtog-right" onclick="togglePanel('right')">Painel Direito</button>
+    </div>
+  </div>
+
+  <div class="ctrl-section">
+    <div class="ctrl-title">📢 Banner Superior</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Visível</span>
+      <label class="tog"><input type="checkbox" id="top-tog" checked onchange="toggleBanner('top',this.checked)"><span class="tog-sl"></span></label>
+    </div>
+    <input class="ctrl-input" id="top-url"  type="text" placeholder="URL da imagem (opcional)">
+    <input class="ctrl-input" id="top-text" type="text" placeholder="Texto do banner" value="Na Rede · Esportes ao Vivo" style="margin-top:6px">
+    <button class="ctrl-btn-sm" onclick="aplicarBanner('top')" style="margin-top:6px">Aplicar</button>
+  </div>
+
+  <div class="ctrl-section">
+    <div class="ctrl-title">📢 Banner Inferior</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">Visível</span>
+      <label class="tog"><input type="checkbox" id="bot-tog" checked onchange="toggleBanner('bot',this.checked)"><span class="tog-sl"></span></label>
+    </div>
+    <input class="ctrl-input" id="bot-url"  type="text" placeholder="URL da imagem (opcional)">
+    <input class="ctrl-input" id="bot-text" type="text" placeholder="Texto do banner" value="portalnarede.com.br" style="margin-top:6px">
+    <button class="ctrl-btn-sm" onclick="aplicarBanner('bot')" style="margin-top:6px">Aplicar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ICONES = { Goal:"⚽", Card:"🟨", subst:"🔄", Var:"📺" };
+const $ = id => document.getElementById(id);
+
+let ST = {
+  fixture:null, eventos:[], escalacao:[], statsData:[], standData:null,
+  rightTab:"stats", panels:{ left:true, right:true },
+};
+
+// ── BroadcastChannel — recebe dados do index.html ─────────────────────────
+const bc = new BroadcastChannel("narede_live");
+
+bc.onmessage = e => {
+  if (e.data.type !== "state_update") return;
+  ST.fixture   = e.data.fixture;
+  ST.eventos   = e.data.eventos   || [];
+  ST.escalacao = e.data.escalacao || [];
+  ST.statsData = e.data.statsData || [];
+  ST.standData = e.data.standData || null;
+  renderAll();
+  const now = new Date().toLocaleTimeString("pt-BR");
+  $("conn-status").textContent = "✅ Último sync: " + now;
+  toast("Dados atualizados!", "success");
+};
+
+function requestState() {
+  bc.postMessage({ type:"request_state" });
+  $("conn-status").textContent = "⏳ Aguardando painel principal...";
+  toast("Solicitando dados...", "info");
+}
+
+// Solicita dados ao abrir a página
+window.addEventListener("load", () => requestState());
+
+// Atalho de teclado
+document.addEventListener("keydown", e => {
+  if (e.key==="c"||e.key==="C") toggleCtrl();
+  if (e.key==="Escape") { $("ctrl-panel").classList.remove("open"); $("ctrl-btn").classList.remove("open"); }
+});
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+function toast(msg, type="info") {
+  const el=$("toast"); el.textContent=msg; el.className="toast show "+type;
+  setTimeout(()=>el.className="toast",2500);
+}
+
+// ── Render all ────────────────────────────────────────────────────────────
+function renderAll() {
+  renderScore();
+  renderEvents();
+  renderRight();
+}
+
+function renderScore() {
+  const f = ST.fixture;
+  if (!f) return;
+  const gh=f.goals.home??0, ga=f.goals.away??0;
+  const min=f.fixture.status.elapsed;
+  const live=["1H","2H","HT","ET","P","BT","LIVE"].includes(f.fixture.status.short);
+  const ht=f.score?.halftime;
+  const htText=ht?"(Int: "+ht.home+"-"+ht.away+")":"";
+
+  $("score-league").innerHTML=`
+    <img class="league-logo" src="${f.league.logo}" onerror="this.style.display='none'">
+    <span class="league-name">${f.league.name}</span>
+    <span class="league-country">${f.league.country}</span>`;
+
+  $("score-center").innerHTML=`
+    <div class="score-team">
+      <img class="score-team-logo" src="${f.teams.home.logo}" onerror="this.style.display='none'">
+      <span class="score-team-name">${f.teams.home.name}</span>
+    </div>
+    <div class="score-numbers">
+      <div class="score-digits">${gh}<span class="score-sep"> : </span>${ga}</div>
+      <div class="score-ht">${htText}</div>
+    </div>
+    <div class="score-team away">
+      <img class="score-team-logo" src="${f.teams.away.logo}" onerror="this.style.display='none'">
+      <span class="score-team-name">${f.teams.away.name}</span>
+    </div>`;
+
+  $("score-status").innerHTML=live
+    ?`<div class="live-badge"><span class="live-dot"></span>AO VIVO</div>
+      <div class="minute-large">${min}'</div>
+      <div class="status-text">${f.fixture.status.long}</div>`
+    :`<div class="status-text" style="font-size:13px;font-weight:700">${f.fixture.status.long}</div>`;
+}
+
+function renderEvents() {
+  if (!ST.fixture) return;
+  const ev=[...ST.eventos].reverse();
+  const home=ST.fixture.teams.home.name;
+  if (!ev.length) { $("events-body").innerHTML='<p class="no-data">Nenhum evento ainda.</p>'; return; }
+  $("events-body").innerHTML=ev.map(e=>{
+    const ico=e.detail==="Red Card"?"🟥":(ICONES[e.type]||"•");
+    const sub=e.assist?.name&&e.type==="subst"?" ↩ "+e.assist.name:"";
+    const lado=e.team.name===home?"⬅️":"➡️";
+    return `<div class="ev-row">
+      <span class="ev-min">${e.time.elapsed}'</span>
+      <span class="ev-ico">${ico}</span>
+      <span class="ev-name">${e.player.name}${sub}</span>
+      <span class="ev-team">${lado}</span>
+    </div>`;
+  }).join("");
+}
+
+function setRightTab(tab) {
+  ST.rightTab=tab;
+  document.querySelectorAll(".ptab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  const titles={stats:"📊 Estatísticas",stand:"🏆 Classificação",lineup:"👥 Escalação"};
+  $("right-panel-title").textContent=titles[tab]||"";
+  renderRight();
+}
+
+function renderRight() {
+  if (ST.rightTab==="stats")  renderStats();
+  else if (ST.rightTab==="stand")  renderStandings();
+  else if (ST.rightTab==="lineup") renderLineup();
+}
+
+function renderStats() {
+  const data=ST.statsData, el=$("right-body");
+  if (!data||data.length<2) { el.innerHTML='<p class="no-data">Estatísticas não disponíveis.<br><small>Abra a aba Stats no painel principal primeiro.</small></p>'; return; }
+  const hS=data[0].statistics, aS=data[1].statistics;
+  const hN=data[0].team.name,  aN=data[1].team.name;
+  const get=(arr,t)=>(arr.find(s=>s.type===t)||{}).value??null;
+  const STATS=[
+    ["Ball Possession","Posse de Bola"],["Shots on Goal","Chutes no Gol"],
+    ["Shots off Goal","Chutes para Fora"],["Total Shots","Total Chutes"],
+    ["Corner Kicks","Escanteios"],["Fouls","Faltas"],
+    ["Yellow Cards","Amarelos"],["Red Cards","Vermelhos"],
+    ["Offsides","Impedimentos"],["Goalkeeper Saves","Defesas"],
+  ];
+  function row(label,hv,av,isPct=false){
+    hv=hv??0;av=av??0;const hn=parseInt(hv)||0,an=parseInt(av)||0;
+    let ph,pa;if(isPct){ph=hn;pa=100-hn;}else{const t=hn+an;ph=t>0?Math.round(hn/t*100):50;pa=100-ph;}
+    return `<div class="stat-row"><div class="stat-lbl">${label}</div><div class="stat-wrap"><span class="stat-v r">${hv}</span><div class="stat-track"><div class="bar-h" style="width:${ph}%"></div><div class="bar-a" style="width:${pa}%"></div></div><span class="stat-v">${av}</span></div></div>`;
+  }
+  el.innerHTML=`<div class="stat-legend"><span class="leg-h">${hN}</span><span class="leg-a">${aN}</span></div>
+    ${STATS.map(([t,l])=>row(l,get(hS,t),get(aS,t),t==="Ball Possession")).join("")}`;
+}
+
+function renderStandings() {
+  const el=$("right-body"), data=ST.standData;
+  if (!data) { el.innerHTML='<p class="no-data">Classificação não disponível.<br><small>Abra a aba Classificação no painel principal primeiro.</small></p>'; return; }
+  const table=data.standings?.[0]||[];
+  const hid=ST.fixture?.teams?.home?.id, aid=ST.fixture?.teams?.away?.id;
+  const rows=table.map(s=>{
+    const hl=(s.team.id===hid||s.team.id===aid)?" hl":"";
+    return `<tr class="${hl}"><td>${s.rank}</td><td><div class="team-cell"><img src="${s.team.logo}" onerror="this.style.display='none'"> ${s.team.name}</div></td><td class="pts">${s.points}</td><td>${s.all.played}</td><td>${s.all.win}</td><td>${s.all.draw}</td><td>${s.all.lose}</td><td>${s.goalsDiff>0?"+":""}${s.goalsDiff}</td></tr>`;
+  }).join("");
+  el.innerHTML=`<div style="overflow-x:auto"><table class="std-table">
+    <thead><tr><th>#</th><th>Time</th><th>P</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+
+function renderLineup() {
+  const el=$("right-body"), esc=ST.escalacao;
+  if (!esc.length) { el.innerHTML='<p class="no-data">Escalação não disponível.</p>'; return; }
+  el.innerHTML=esc.map(team=>{
+    const c=(players,sub)=>players.map(p=>{
+      const pl=p.player, foto="https://media.api-sports.io/football/players/"+pl.id+".png";
+      return `<div class="pl-card" style="${sub?'opacity:.5':''}">
+        <img src="${foto}" onerror="this.src='https://placehold.co/38x38/06040f/9B59D0?text=${pl.number}'">
+        <div class="pl-num">#${pl.number}</div><div class="pl-name">${pl.name.split(" ").pop()}</div><div class="pl-pos">${pl.pos||''}</div>
+      </div>`;
+    }).join("");
+    return `<div class="lineup-team">
+      <div class="lineup-head"><img src="${team.team.logo}" onerror="this.style.display='none'"><span>${team.team.name}</span><span class="form-badge">${team.formation}</span></div>
+      <div class="pl-grid">${c(team.startXI,false)}</div>
+      <div class="sub-lbl">Reservas</div>
+      <div class="pl-grid">${c(team.substitutes,true)}</div>
+    </div>`;
+  }).join("");
+}
+
+// ── Panels ────────────────────────────────────────────────────────────────
+function togglePanel(side) {
+  ST.panels[side]=!ST.panels[side];
+  $("dtog-"+side).classList.toggle("on",ST.panels[side]);
+  const ca=$("content-area");
+  ca.classList.toggle("hide-left",  !ST.panels.left);
+  ca.classList.toggle("hide-right", !ST.panels.right);
+}
+
+// ── Banners ───────────────────────────────────────────────────────────────
+function toggleBanner(side,visible) {
+  $(side==="top"?"top-banner":"bot-banner").classList.toggle("hidden",!visible);
+}
+function aplicarBanner(side) {
+  const url=$(side+"-url").value.trim(), txt=$(side+"-text").value.trim();
+  const c=$(side+"-banner-content");
+  if (url) c.innerHTML=`<img class="banner-img" src="${url}" onerror="this.style.display='none'">`;
+  else { c.textContent=txt; c.style.color="#fff"; }
+}
+
+// ── Controls ──────────────────────────────────────────────────────────────
+function toggleCtrl() {
+  $("ctrl-panel").classList.toggle("open");
+  $("ctrl-btn").classList.toggle("open");
+}
+</script>
+</body>
+</html>
