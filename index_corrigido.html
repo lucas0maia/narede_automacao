@@ -470,6 +470,21 @@ function uniqBy(arr, keyFn) {
   const seen = new Set();
   return arr.filter(x => { const k=keyFn(x); if(seen.has(k)) return false; seen.add(k); return true; });
 }
+function proxyApiSportsImage(url) {
+  if (!url) return "";
+  const raw = String(url).trim();
+  if (!raw.includes("media.api-sports.io")) return raw;
+  if (/^https?:\/\/images\.weserv\.nl\/\?url=/i.test(raw)) return raw;
+  return `http://images.weserv.nl/?url=${raw.replace(/^https?:\/\//i, "")}`;
+}
+function proxificarPayloadApiSports(value) {
+  if (Array.isArray(value)) return value.map(proxificarPayloadApiSports);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([k,v]) => [k, proxificarPayloadApiSports(v)]));
+  }
+  if (typeof value === "string") return proxyApiSportsImage(value);
+  return value;
+}
 
 // ── Carregamento robusto da partida ───────────────────────────────────────
 async function carregarFixtureCompleta(fid, opts={}) {
@@ -651,7 +666,7 @@ async function enviarSheets() {
   await fetch(cfg.scriptUrl,{
     method:"POST", mode:"no-cors",
     headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body: JSON.stringify(payload),
+    body: JSON.stringify(proxificarPayloadApiSports(payload)),
   });
   return true;
 }
@@ -704,9 +719,9 @@ function cardHTML(f) {
   return `<div class="match-card ${live?"live":"upcoming"}${sel}" onclick="selecionarJogo(${fid})">
     <div class="card-top"><span class="league">${f.league.name}</span>${badge}</div>
     <div class="card-body">
-      <div class="card-team home"><img src="${f.teams.home.logo}" onerror="this.style.display='none'"><span class="card-team-name">${f.teams.home.name}</span></div>
+      <div class="card-team home"><img src="${proxyApiSportsImage(f.teams.home.logo)}" onerror="this.style.display='none'"><span class="card-team-name">${f.teams.home.name}</span></div>
       <span class="card-score">${gh} : ${ga}</span>
-      <div class="card-team away"><img src="${f.teams.away.logo}" onerror="this.style.display='none'"><span class="card-team-name">${f.teams.away.name}</span></div>
+      <div class="card-team away"><img src="${proxyApiSportsImage(f.teams.away.logo)}" onerror="this.style.display='none'"><span class="card-team-name">${f.teams.away.name}</span></div>
     </div>
   </div>`;
 }
@@ -723,15 +738,15 @@ function renderPreview() {
   $("main").innerHTML=`
     <div class="scoreboard">
       <div class="sb-header">
-        <img src="${f.league.logo}" style="height:16px;vertical-align:middle;margin-right:6px;opacity:.8" onerror="this.style.display='none'">
+        <img src="${proxyApiSportsImage(f.league.logo)}" style="height:16px;vertical-align:middle;margin-right:6px;opacity:.8" onerror="this.style.display='none'">
         <span class="sb-liga">${f.league.name} · ${f.league.country}</span>
         ${min?`<span class="sb-minute">${min}'</span>`:""}
         <div class="sb-status">${f.fixture.status.long}</div>
       </div>
       <div class="sb-body">
-        <div class="sb-team"><img src="${f.teams.home.logo}" onerror="this.style.display='none'"><div class="sb-team-name">${f.teams.home.name}</div></div>
+        <div class="sb-team"><img src="${proxyApiSportsImage(f.teams.home.logo)}" onerror="this.style.display='none'"><div class="sb-team-name">${f.teams.home.name}</div></div>
         <div class="sb-score">${gh}&thinsp;<span style="color:var(--border-lt)">:</span>&thinsp;${ga}</div>
-        <div class="sb-team"><img src="${f.teams.away.logo}" onerror="this.style.display='none'"><div class="sb-team-name">${f.teams.away.name}</div></div>
+        <div class="sb-team"><img src="${proxyApiSportsImage(f.teams.away.logo)}" onerror="this.style.display='none'"><div class="sb-team-name">${f.teams.away.name}</div></div>
       </div>
       <div class="sb-actions" id="actions-container">${actionsHTML()}</div>
     </div>
@@ -806,7 +821,7 @@ function escalacaoHTML(escalacao) {
     const tid=team.team.id;
     const t=p=>playerCardHTML(p.player,false,tid), r=p=>playerCardHTML(p.player,true,tid);
     return `<div class="team-lineup">
-      <div class="lineup-header"><img src="${team.team.logo}" onerror="this.style.display='none'"><span>${team.team.name}</span><span class="formation">${team.formation||''}</span></div>
+      <div class="lineup-header"><img src="${proxyApiSportsImage(team.team.logo)}" onerror="this.style.display='none'"><span>${team.team.name}</span><span class="formation">${team.formation||''}</span></div>
       <div class="players-grid">${(team.startXI||[]).map(t).join("")}</div>
       <div class="subs-label">Reservas</div>
       <div class="players-grid">${(team.substitutes||[]).map(r).join("")}</div>
@@ -823,7 +838,7 @@ function getPlayerEvents(pid) {
   };
 }
 function playerCardHTML(pl,sub,tid) {
-  const foto=`https://media.api-sports.io/football/players/${pl.id}.png`;
+  const foto=proxyApiSportsImage(`https://media.api-sports.io/football/players/${pl.id}.png`);
   const ev=getPlayerEvents(pl.id);
   const badges=[...Array(ev.gols).fill('⚽'),...Array(ev.assists).fill('🅰️'),...Array(ev.amarelos).fill('🟨'),...Array(ev.vermelhos).fill('🟥')].join('');
   return `<div class="player-card" style="${sub?'opacity:.5':''}" onclick="abrirJogador(${pl.id},${tid})">
@@ -881,7 +896,7 @@ function renderStandings() {
     const groupName = data.league.standings.length>1 ? `<div style="font-size:11px;color:var(--purple-lt);font-weight:700;margin:10px 0 6px">${group[0]?.group||('Grupo '+(idx+1))}</div>` : "";
     const rows=(group||[]).map(s=>{
       const hl=(s.team.id===hid||s.team.id===aid)?" highlighted":"";
-      return `<tr class="${hl}"><td>${s.rank}</td><td><div class="team-cell"><img src="${s.team.logo}" onerror="this.style.display='none'"> ${s.team.name}</div></td><td class="pts">${s.points}</td><td>${s.all.played}</td><td>${s.all.win}</td><td>${s.all.draw}</td><td>${s.all.lose}</td><td>${s.goalsDiff>0?"+":""}${s.goalsDiff}</td></tr>`;
+      return `<tr class="${hl}"><td>${s.rank}</td><td><div class="team-cell"><img src="${proxyApiSportsImage(s.team.logo)}" onerror="this.style.display='none'"> ${s.team.name}</div></td><td class="pts">${s.points}</td><td>${s.all.played}</td><td>${s.all.win}</td><td>${s.all.draw}</td><td>${s.all.lose}</td><td>${s.goalsDiff>0?"+":""}${s.goalsDiff}</td></tr>`;
     }).join("");
     return `${groupName}<div style="overflow-x:auto"><table class="standings-table"><thead><tr><th>#</th><th>Time</th><th>Pts</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   }).join("");
@@ -908,7 +923,7 @@ async function abrirJogador(pid,tid) {
 }
 function renderModal(pl) {
   const p=pl.player, s=pl.statistics?.[0]||{};
-  const foto=`https://media.api-sports.io/football/players/${p.id}.png`;
+  const foto=proxyApiSportsImage(`https://media.api-sports.io/football/players/${p.id}.png`);
   const rating=parseFloat(s.games?.rating||0);
   function cell(val,label){return `<div class="stat-cell"><div class="stat-cell-val">${val??'—'}</div><div class="stat-cell-label">${label}</div></div>`;}
   $("modal-content").innerHTML=`
@@ -941,7 +956,7 @@ function historicoHTML(pid) {
   return rows.flatMap(data => (data.statistics||[]).map(s=>`
     <div style="margin-bottom:10px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--text-mid)">
-        <img src="${s.team.logo}" style="width:18px;height:18px;object-fit:contain" onerror="this.style.display='none'">
+        <img src="${proxyApiSportsImage(s.team.logo)}" style="width:18px;height:18px;object-fit:contain" onerror="this.style.display='none'">
         ${data.seasonLabel||''} · ${s.team.name} <span style="color:var(--muted);font-weight:400">· ${s.league?.name||''}</span>
       </div>
       <div class="stat-grid">${cell(s.games?.appearences,'Jogos')}${cell(s.goals?.total||0,'Gols')}${cell(s.goals?.assists||0,'Assistências')}${cell(s.games?.minutes,'Minutos')}${cell(s.cards?.yellow||0,'🟨')}${cell(s.cards?.red||0,'🟥')}</div>
