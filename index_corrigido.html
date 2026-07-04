@@ -937,7 +937,7 @@ function renderModal(pl) {
         <div class="modal-section-title">Estatísticas da Partida</div>
         <div class="stat-grid">
           ${cell(s.games?.minutes||'—','Minutos')}${cell(s.goals?.total||0,'Gols')}${cell(s.goals?.assists||0,'Assistências')}
-          ${cell((s.shots?.total||0)+'('+(s.shots?.on||0)+')','Chutes(alvo)')}${cell(s.passes?.total||0,'Passes')}${cell(s.passes?.accuracy?s.passes.accuracy+'|-|':'—','Passes certos')}
+          ${cell((s.shots?.total||0)+'('+(s.shots?.on||0)+')','Chutes(alvo)')}${cell(s.passes?.total||0,'Passes')}${cell(s.passes?.accuracy?s.passes.accuracy+'':'—','Passes certos')}
           ${cell(s.tackles?.total||0,'Desarmes')}${cell(s.cards?.yellow||0,'🟨 Amarelos')}${cell(s.cards?.red||0,'🟥 Vermelhos')}
           ${cell(s.duels?.won??'—','Duelos venc.')}${cell(s.dribbles?.success??'—','Dribles certos')}${cell(s.fouls?.drawn??'—','Faltas sofridas')}
         </div>
